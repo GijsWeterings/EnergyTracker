@@ -35,7 +35,7 @@ while True:
         raw_packet = meter.read_one_packet()
         print raw_packet._keys['gas']['valve']
 
-        timestamp = str(int(time.time()))
+        timestamp = int(time.time())
         data = {}
 	data['timestamp'] = timestamp
         data['gas'] = {}
