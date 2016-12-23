@@ -16,7 +16,7 @@ I am basing these commands on Raspbian Jessie, but they shouldn't differ much if
 Install dependencies:
 ```
 sudo apt-get install python python-pip
-sudo pip install pyrebase pyserial
+sudo pip install pyrebase smeterd
 ```
 
 ## Configuration

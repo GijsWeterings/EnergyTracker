@@ -1,40 +1,57 @@
 """
 You probably want to run this as a deamon on startup
 """
-import serial
+from smeterd.meter import SmartMeter
 import sys
+import os
+import time
+import pyrebase
 from time import sleep
 
-def initSerial():
-    #Set COM port config
-    ser = serial.Serial()
-    ser.baudrate = 115200
-    ser.bytesize=serial.SEVENBITS
-    ser.parity=serial.PARITY_EVEN
-    ser.stopbits=serial.STOPBITS_ONE
-    ser.xonxoff=0
-    ser.rtscts=0
-    ser.timeout=20
-    ser.port="/dev/ttyUSB0"
+meter = SmartMeter("/dev/ttyUSB0")
+meter.serial.baudrate = 115200
+meter.connect()
 
-    #Open COM port
-    try:
-        ser.open()
-    except:
-        sys.exit ("Error opening %s."  % ser.name)
-    
-    return ser
+api = os.environ["APIKEY"]
 
-def readDataFromSerial():
-    return "mock", ser.readLine()
-    
-    
-ser = initSerial()
+config = {
+    "apiKey": api,
+    "authDomain": "energytracking-65210.firebaseapp.com",
+    "databaseURL": "https://energytracking-65210.firebaseio.com",
+    "storageBucket": "energytracking-65210.appspot.com",
+    "serviceAccount": "sdk-key.json"
+}
+
+firebase = pyrebase.initialize_app(config)
+auth = firebase.auth()
+
+token = auth.create_custom_token("your_custom_id")
+user = auth.sign_in_with_custom_token(token)
+
+db = firebase.database()
 
 while True:
-    (timestamp, data) = readDataFromSerial()
-    print timestamp
-    print data
+    try:
+        raw_packet = meter.read_one_packet()
+        print raw_packet._keys['gas']['valve']
 
-    # sleep for 5 minutes
-    sleep(300)
+        timestamp = str(int(time.time()))
+        data = {}
+        data['gas'] = {}
+        data['kwh'] = {}
+        data['gas']['valve'] = raw_packet._keys['gas']['valve']
+        data['gas']['total'] = raw_packet._keys['gas']['total'] #m3
+        data['kwh']['current_consumed'] = raw_packet._keys['kwh']['current_consumed'] #kW
+        data['kwh']['high_total'] = raw_packet._keys['kwh']['high']['consumed'] #kW
+        data['kwh']['low_total'] = raw_packet._keys['kwh']['low']['consumed'] #kW
+        
+        
+        db.child("usage").child(timestamp).set(data)
+
+        # sleep for 5 minutes
+        sleep(300)
+    except smeterd.meter.P1PacketError:
+        continue
+    except KeyboardInterrupt:
+        meter.disconnect()
+        sys.exit()
