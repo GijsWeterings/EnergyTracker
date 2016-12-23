@@ -37,6 +37,7 @@ while True:
 
         timestamp = str(int(time.time()))
         data = {}
+	data['timestamp'] = timestamp
         data['gas'] = {}
         data['kwh'] = {}
         data['gas']['valve'] = raw_packet._keys['gas']['valve']
@@ -46,7 +47,7 @@ while True:
         data['kwh']['low_total'] = raw_packet._keys['kwh']['low']['consumed'] #kW
         
         
-        db.child("usage").child(timestamp).set(data)
+        db.child("usage").add(data)
 
         # sleep for 5 minutes
         sleep(300)
