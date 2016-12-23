@@ -47,7 +47,7 @@ while True:
         data['kwh']['low_total'] = raw_packet._keys['kwh']['low']['consumed'] #kW
         
         
-        db.child("usage").add(data)
+        db.child("usage").push(data)
 
         # sleep for 5 minutes
         sleep(300)
