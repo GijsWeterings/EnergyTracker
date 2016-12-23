@@ -15,7 +15,7 @@ meter.connect()
 api = os.environ["APIKEY"]
 
 config = {
-    "apiKey": api,
+    "apiKey": "AIzaSyC9cO-6W6SJ5oz8I_8Ewysf3S2E9Ubx-KQ",
     "authDomain": "energytracking-65210.firebaseapp.com",
     "databaseURL": "https://energytracking-65210.firebaseio.com",
     "storageBucket": "energytracking-65210.appspot.com",
