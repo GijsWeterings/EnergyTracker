@@ -54,5 +54,5 @@ while True:
     except KeyboardInterrupt:
         meter.disconnect()
         sys.exit()
-    except:
-	continue
+#    except:
+#	continue
