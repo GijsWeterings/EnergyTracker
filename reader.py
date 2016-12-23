@@ -50,7 +50,7 @@ while True:
 
         # sleep for 5 minutes
         sleep(300)
-    except smeterd.meter.P1PacketError:
+    except P1PacketError:
         continue
     except KeyboardInterrupt:
         meter.disconnect()
